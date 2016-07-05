@@ -52,3 +52,17 @@ exports.oauth = {
     secret: process.env.TUMBLR_OAUTH_SECRET || ''
   }
 };
+
+var tokenExpiryTime = {
+  days: 0,
+  hours: 1,
+  minutes: 0,
+};
+
+var milliSecondsIn = {
+  day: 86400000,
+  hour: 3600000,
+  minute: 60000
+};
+
+exports.tokenTTL = tokenExpiryTime.days*milliSecondsIn.day + tokenExpiryTime.hours*milliSecondsIn.hour + tokenExpiryTime.minutes*milliSecondsIn.minute;

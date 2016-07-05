@@ -1,4 +1,6 @@
 'use strict';
+var mongoose = require('mongoose');
+
 var filterUser = function (user) {
   if (user) {
     return {
@@ -491,12 +493,35 @@ var security = {
             if (err) {
               return workflow.emit('exception', err);
             }
-            workflow.outcome.user = filterUser(req.user);
-            workflow.outcome.defaultReturnUrl = user.defaultReturnUrl();
-            workflow.emit('response');
+            
+            req.app.db.models.SessionTokens.findOne({'userCreated.id': req.user._id}, function(err, sessionToken) {
+              if(err) { return workflow.emit('exception', err); }
+
+              if(!sessionToken) {
+                var fieldsToSet = {
+                  expiredAt: new Date(new Date().getTime()+ req.app.config.tokenTTL),
+                  userCreated: {
+                    id: user._id,
+                    name: user.username
+                  }
+                };
+                req.app.db.models.SessionTokens.create(fieldsToSet, function(err, sessionToken) {
+                  workflow.emit('success', user, sessionToken.token);
+                });
+              } else {
+                workflow.emit('success', user, sessionToken.token);
+              }
+            });
           });
         }
       })(req, res);
+    });
+
+    workflow.on('success', function(user, token) {
+      workflow.outcome.token = token;
+      workflow.outcome.user = filterUser(req.user);
+      workflow.outcome.defaultReturnUrl = user.defaultReturnUrl();
+      workflow.emit('response');
     });
 
     workflow.emit('validate');
@@ -655,6 +680,42 @@ var security = {
     });
 
     workflow.emit('validate');
+  },
+  extendToken: function(req, res) {
+    var workflow = req.app.utility.workflow(req, res);
+    
+    var condition = {
+      token: req.body.token
+    };
+
+    var update = {
+      expiredAt: new Date(new Date().getTime()+ req.app.config.tokenTTL),
+    };
+
+    req.app.db.models.SessionTokens.findOneAndUpdate(condition, update, function(err, sessionToken) {
+      if(err) { return workflow.emit('exception', err); }
+
+      if(!sessionToken) {
+        return workflow.emit('exception', "Invalid token provided");
+      }
+
+      workflow.emit('response');
+    });
+  },
+  verifyToken: function(req, res, next) {
+    var workflow = req.app.utility.workflow(req, res);
+
+    var condition = {
+      token: req.body.token
+    };
+
+    req.app.db.models.SessionTokens.findOne(condition, function(err, sessionToken) {
+      if(sessionToken.expiredAt > new Date()) {
+        next();
+      } else {
+        res.send(401);
+      }
+    });
   }
 };
 

@@ -66,7 +66,7 @@ exports = module.exports = function(app, passport) {
   app.get('/api/login/facebook/callback', security.loginFacebook);
   app.get('/api/login/google/callback', security.loginGoogle);
   app.post('/api/logout', security.logout);
-
+  app.post('/api/extend-token', security.extendToken);
   //-----authentication required api-----
   app.all('/api/account*', apiEnsureAuthenticated);
   app.all('/api/account*', apiEnsureAccount);
