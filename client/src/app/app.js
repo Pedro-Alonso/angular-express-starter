@@ -56,9 +56,13 @@ angular.module('app').run(['$location', '$rootScope', 'security', function($loca
   });
 }]);
 
-angular.module('app').controller('AppCtrl', ['$scope', 'i18nNotifications', 'localizedMessages', function($scope, i18nNotifications, localizedMessages) {
+angular.module('app').controller('AppCtrl', ['$scope', 'i18nNotifications', 'localizedMessages', 'security', function($scope, i18nNotifications, localizedMessages, security) {
 
   $scope.notifications = i18nNotifications;
+
+  $scope.isAuthenticated = function(){
+    return security.isAuthenticated();
+  };
 
   $scope.removeNotification = function (notification) {
     i18nNotifications.remove(notification);
