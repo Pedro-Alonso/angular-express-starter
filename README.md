@@ -3,6 +3,29 @@
 A website and user system, implemented with [MongoDB](https://www.mongodb.org/), [Express](http://expressjs.com/), [AngularJS](https://angularjs.org/) and [Node.js](https://nodejs.org/), a.k.a MEAN stack.
 Inspired by and forked from [Drywall](https://github.com/jedireza/drywall).
 
+## Screenshots
+
+### Home Screen
+![HOME](SCREENS/HOME.png)
+
+### Login
+![HOME](SCREENS/LOGIN.png)
+
+### Signup
+![HOME](SCREENS/SIGNUP.png)
+
+### User Home after login
+![HOME](SCREENS/USER_HOME.png)
+
+### User Profile Settings
+![HOME](SCREENS/USER_SETTINGS.png)
+
+### Admin Home Screen after Login
+![HOME](SCREENS/ADMIN_USERS.png)
+
+### Admin Menu
+![HOME](SCREENS/ADMIN_OPTIONS.png)
+
 ## Features
 
  - Versatility because you can
